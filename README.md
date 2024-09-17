@@ -49,14 +49,12 @@ struct ContentView: View {
         List(tasks) { task in
             Text(task.name)
         }
-                .navigationBarTitle("TODOs")
+        .navigationBarTitle("TODOs")
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }
  ```
 
