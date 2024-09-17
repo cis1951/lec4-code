@@ -31,14 +31,7 @@ struct TodoItemView: View {
     }
 }
 
-private struct TodoItemViewPreview: View {
-    @State var todo = Todo(name: "Preview Todo", isCompleted: true)
-    
-    var body: some View {
-        TodoItemView(todo: $todo)
-    }
-}
-
 #Preview {
-    TodoItemViewPreview()
+    @State var todo = Todo(name: "Preview Todo", isCompleted: true)
+    return TodoItemView(todo: $todo)
 }

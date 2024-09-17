@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		895CF4542C9A4F280092E3ED /* TodoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895CF4532C9A4F280092E3ED /* TodoModel.swift */; };
 		897143642B75A7B3009D0F28 /* Task_ManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897143632B75A7B3009D0F28 /* Task_ManagerApp.swift */; };
 		897143662B75A7B3009D0F28 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897143652B75A7B3009D0F28 /* ContentView.swift */; };
 		897143682B75A7B5009D0F28 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 897143672B75A7B5009D0F28 /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		895CF4532C9A4F280092E3ED /* TodoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoModel.swift; sourceTree = "<group>"; };
 		897143602B75A7B3009D0F28 /* Task Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Task Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		897143632B75A7B3009D0F28 /* Task_ManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task_ManagerApp.swift; sourceTree = "<group>"; };
 		897143652B75A7B3009D0F28 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				897143652B75A7B3009D0F28 /* ContentView.swift */,
 				897143732B75ACCA009D0F28 /* TodoItemView.swift */,
 				897143712B75A81F009D0F28 /* TodoItem.swift */,
+				895CF4532C9A4F280092E3ED /* TodoModel.swift */,
 				897143672B75A7B5009D0F28 /* Assets.xcassets */,
 				897143692B75A7B5009D0F28 /* Preview Content */,
 			);
@@ -146,6 +149,7 @@
 				897143662B75A7B3009D0F28 /* ContentView.swift in Sources */,
 				897143742B75ACCA009D0F28 /* TodoItemView.swift in Sources */,
 				897143722B75A81F009D0F28 /* TodoItem.swift in Sources */,
+				895CF4542C9A4F280092E3ED /* TodoModel.swift in Sources */,
 				897143642B75A7B3009D0F28 /* Task_ManagerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
