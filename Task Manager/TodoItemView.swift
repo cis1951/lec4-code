@@ -22,6 +22,8 @@ struct TodoItemView: View {
             }
             .accessibilityLabel(Text(todo.isCompleted ? "Completed" : "Mark as Complete"))
         }
+        .opacity(todo.isCompleted ? 0.1 : 1)
+        .animation(.default, value: todo.isCompleted)g
     }
 }
 
