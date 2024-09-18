@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var todos = [TodoItem]()
+    @ObservedObject var todoModel: TodoModel
     @State private var newTodoName = "" // For handling user input
     
     var body: some View {
@@ -22,19 +22,19 @@ struct ContentView: View {
             .padding()
             .disabled(newTodoName.isEmpty)
             
-            List($todos) { $todo in
-                TodoItemView(todo: $todo)
+            List(todoModel.todos) { todo in
+                TodoItemView(todoModel: todoModel, todo: todo)
             }
         }
     }
     
     private func addNewTodo() {
         let newTodo = TodoItem(name: newTodoName, isCompleted: false)
-        todos.append(newTodo)
+        todoModel.createTodo(todo: newTodo)
         newTodoName = "" // Reset input field
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(todoModel: TodoModel())
 }

@@ -13,6 +13,7 @@
 		8971436B2B75A7B5009D0F28 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8971436A2B75A7B5009D0F28 /* Preview Assets.xcassets */; };
 		89B2D1F02C9A8C170005CCE7 /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B2D1EF2C9A8C170005CCE7 /* TodoItem.swift */; };
 		89B2D1F22C9A8D530005CCE7 /* TodoItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B2D1F12C9A8D4F0005CCE7 /* TodoItemView.swift */; };
+		89B2D1F62C9A8E380005CCE7 /* TodoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B2D1F52C9A8E370005CCE7 /* TodoModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		89B2D1EE2C9A8BDB0005CCE7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		89B2D1EF2C9A8C170005CCE7 /* TodoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItem.swift; sourceTree = "<group>"; };
 		89B2D1F12C9A8D4F0005CCE7 /* TodoItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemView.swift; sourceTree = "<group>"; };
+		89B2D1F52C9A8E370005CCE7 /* TodoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				897143652B75A7B3009D0F28 /* ContentView.swift */,
 				89B2D1EF2C9A8C170005CCE7 /* TodoItem.swift */,
 				89B2D1F12C9A8D4F0005CCE7 /* TodoItemView.swift */,
+				89B2D1F52C9A8E370005CCE7 /* TodoModel.swift */,
 				897143672B75A7B5009D0F28 /* Assets.xcassets */,
 				897143692B75A7B5009D0F28 /* Preview Content */,
 			);
@@ -148,6 +151,7 @@
 				897143662B75A7B3009D0F28 /* ContentView.swift in Sources */,
 				89B2D1F22C9A8D530005CCE7 /* TodoItemView.swift in Sources */,
 				89B2D1F02C9A8C170005CCE7 /* TodoItem.swift in Sources */,
+				89B2D1F62C9A8E380005CCE7 /* TodoModel.swift in Sources */,
 				897143642B75A7B3009D0F28 /* TaskManagerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

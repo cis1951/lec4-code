@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct TodoItemView: View {
-    @Binding var todo: TodoItem
+    @ObservedObject var todoModel: TodoModel
+    var todo: TodoItem
     
     var body: some View {
         HStack {
             Text(todo.name)
             Spacer()
             Button(action: {
-                todo.isCompleted.toggle()
+                todoModel.toggleComplete(id: todo.id)
             }) {
                 Image(systemName: todo.isCompleted ? "checkmark.square.fill" : "square")
             }
@@ -24,14 +25,9 @@ struct TodoItemView: View {
     }
 }
 
-private struct TodoItemPreview: View {
-    @State var todo = TodoItem(name: "Finish things", isCompleted: false)
-    
-    var body: some View {
-        TodoItemView(todo: $todo)
-    }
-}
-
 #Preview {
-    TodoItemPreview()
+    TodoItemView(
+        todoModel: TodoModel(),
+        todo: TodoItem(name: "Finish things", isCompleted: false)
+    )
 }
