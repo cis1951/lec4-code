@@ -8,12 +8,30 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var todos = [TodoItem]()
+    @State var todos = [TodoItem]()
+    @State private var newTodoName = "" // For handling user input
     
     var body: some View {
-        List(todos) { todo in
-            Text(todo.name)
+        VStack {
+            TextField("Enter new todo", text: $newTodoName)
+                .padding()
+            
+            Button(action: addNewTodo) {
+                Text("Add Todo")
+            }
+            .padding()
+            .disabled(newTodoName.isEmpty)
+            
+            List(todos) { todo in
+                Text(todo.name)
+            }
         }
+    }
+    
+    private func addNewTodo() {
+        let newTodo = TodoItem(name: newTodoName, isCompleted: false)
+        todos.append(newTodo)
+        newTodoName = "" // Reset input field
     }
 }
 
