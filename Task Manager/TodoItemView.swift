@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TodoItemView: View {
-    @ObservedObject var todoModel: TodoModel
+    @EnvironmentObject var todoModel: TodoModel
     var todo: TodoItem
     
     var body: some View {
@@ -27,7 +27,7 @@ struct TodoItemView: View {
 
 #Preview {
     TodoItemView(
-        todoModel: TodoModel(),
         todo: TodoItem(name: "Finish things", isCompleted: false)
     )
+    .environmentObject(TodoModel())
 }

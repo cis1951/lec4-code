@@ -13,7 +13,8 @@ struct TaskManagerApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(todoModel: TodoModel())
+            ContentView()
+                .environmentObject(todoModel)
         }
     }
 }

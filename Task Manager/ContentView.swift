@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var todoModel: TodoModel
+    @EnvironmentObject var todoModel: TodoModel
     @State private var newTodoName = "" // For handling user input
     
     var body: some View {
@@ -23,7 +23,7 @@ struct ContentView: View {
             .disabled(newTodoName.isEmpty)
             
             List(todoModel.todos) { todo in
-                TodoItemView(todoModel: todoModel, todo: todo)
+                TodoItemView(todo: todo)
             }
         }
     }
@@ -36,5 +36,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(todoModel: TodoModel())
+    ContentView()
+        .environmentObject(TodoModel())
 }
