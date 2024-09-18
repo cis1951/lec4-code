@@ -11,7 +11,16 @@ struct TodoItemView: View {
     @Binding var todo: TodoItem
     
     var body: some View {
-        Text(todo.name)
+        HStack {
+            Text(todo.name)
+            Spacer()
+            Button(action: {
+                todo.isCompleted.toggle()
+            }) {
+                Image(systemName: todo.isCompleted ? "checkmark.square.fill" : "square")
+            }
+            .accessibilityLabel(Text(todo.isCompleted ? "Completed" : "Mark as Complete"))
+        }
     }
 }
 
