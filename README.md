@@ -1,5 +1,11 @@
 # Week 4 Tutorial: TaskManager App with SwiftUI
 
+> [!NOTE]
+> 
+> You can access the finished code at one of these branches:
+> * [solution-step7](https://github.com/cis1951/lec4-code/tree/solution-step7) for the code just after step 7
+> * [solution-step12](https://github.com/cis1951/lec4-code/tree/solution-step12) for the code just after step 12 (the end of this README)
+
 ## Introduction
 
 We will do a simple demonstration of SwiftUI's capabilities for state management, including the use
