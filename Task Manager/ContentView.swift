@@ -22,8 +22,8 @@ struct ContentView: View {
             .padding()
             .disabled(newTodoName.isEmpty)
             
-            List(todos) { todo in
-                Text(todo.name)
+            List($todos) { $todo in
+                TodoItemView(todo: $todo)
             }
         }
     }
