@@ -1,11 +1,5 @@
 # Week 4 Tutorial: TaskManager App with SwiftUI
 
-> [!NOTE]
-> 
-> You can access the finished code at one of these branches:
-> * [solution-step7](https://github.com/cis1951/lec4-code/tree/solution-step7) for the code just after step 7
-> * [solution-step12](https://github.com/cis1951/lec4-code/tree/solution-step12) for the code just after step 12 (the end of this README)
-
 ## Introduction
 
 We will do a simple demonstration of SwiftUI's capabilities for state management, including the use
@@ -38,6 +32,8 @@ struct TodoItem: Identifiable {
 }
 ```
 
+(You can also add other properties as you see fit.)
+
 ## Step 3: Add a Task List to ContentView
 
 In this step, we'll create a view that lists all the tasks. We'll use `@State` to manage the array of tasks within this
@@ -49,13 +45,12 @@ Modify the `ContentView` to include a `@State` variable that holds an array of `
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tasks = [TodoItem]()
+    @State private var todos = [TodoItem]()
 
     var body: some View {
-        List(tasks) { task in
-            Text(task.name)
+        List(todos) { todo in
+            Text(todos.name)
         }
-        .navigationBarTitle("TODOs")
     }
 }
 
@@ -73,30 +68,31 @@ input.
 Embed the existing `List` in a `VStack` and add a `TextField` and a `Button` above it to allow users to enter a new task
 name and add it to the list.
 
- ```swift
- struct ContentView: View {
-    @State private var tasks = [TodoItem]()
-    @State private var newTaskName = "" // For capturing user input
-
+```swift
+struct ContentView: View {
+    @State var todos = [TodoItem]()
+    @State private var newTodoName = "" // For handling user input
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                TextField("Enter new task", text: $newTaskName)
-                        .padding()
-                Button(action: {}) {
-                    Text("Add Task")
-                }
-                        .padding()
-                        .disabled(newTaskName.isEmpty)
-                List(tasks) { task in
-                    Text(task.name)
-                }
-                        .navigationBarTitle("TODOs")
+        VStack {
+            TextField("Enter new todo", text: $newTodoName)
+                .padding()
+            
+            Button(action: addNewTodo) {
+                Text("Add Todo")
+            }
+            .padding()
+            .disabled(newTodoName.isEmpty)
+            
+            List(todos) { todo in
+                Text(todo.name)
             }
         }
     }
 }
- ```
+```
+
+Your code may not compile at this point - this is fine. We'll fix that in the next step.
 
 ## Step 5: Create a New Task
 
@@ -105,18 +101,15 @@ Next, we implement the button functionality to add a new task upon form submissi
 ```swift
 struct ContentView: View {
     // ...
-    private func addNewTask() {
-        let newTask = TodoItem(name: newTaskName, isCompleted: false)
-        tasks.append(newTask)
-        newTaskName = "" // Reset input field
+
+    private func addNewTodo() {
+        let newTodo = TodoItem(name: newTodoName, isCompleted: false)
+        todos.append(newTodo)
+        newTodoName = "" // Reset input field
     }
 
     // ...
 }
- ```
-
-```swift
-Button(action: addNewTask)
 ```
 
 ## Step 6: Create a Custom View for Task Items
@@ -124,44 +117,53 @@ Button(action: addNewTask)
 It is common to create a custom view for individual item views in a list, especially when the item view is complex. To
 share data between the parent list and the children item views, we can use `@Binding`.
 
-First, create a `TaskItemView.swift` file, and implement the item view:
+First, create a `TodoItemView.swift` file, and implement the item view with a button that toggles whether the todo is completed:
 
  ```swift
 import SwiftUI
 
-struct TaskItemView: View {
-    @Binding var task: TodoItem
+struct TodoItemView: View {
+    @Binding var todo: TodoItem
 
     var body: some View {
-        Text(task.name)
+        Text(todo.name)
     }
 }
 ```
 
-Then, update the `List` in `ContentView` to use the custom item view:
+Then, update the `List` in `ContentView` to use the custom item view and pass in a binding:
 
 ```swift
-List($tasks) { $task in
-    TaskItemView(task: $task)
+List($todos) { $todo in
+    TodoItemView(todo: $todo)
 }
 ```
 
 ## Step 7: Mark a Task as Completed
 
-To allow users to mark tasks as completed, we'll add a toggle next to each task in the list. Modify the `TaskItemView`
-to include a `Toggle` for each task, bound to the task's `isCompleted` property.
+To allow users to mark tasks as completed, we'll add a toggle next to each task in the list. Modify the `TodoItemView`
+to include a `Button` for each task that toggles the task's `isCompleted` property.
 
 ```swift
-struct TaskItemView: View {
-    @Binding var task: TodoItem
+struct TodoItemView: View {
+    @Binding var todo: TodoItem
 
     var body: some View {
-        Toggle(isOn: $task.isCompleted) {
-            Text(task.name)
+        HStack {
+            Text(todo.name)
+            Spacer()
+            Button(action: {
+                todo.isCompleted.toggle()
+            }) {
+                Image(systemName: todo.isCompleted ? "checkmark.square.fill" : "square")
+            }
+            .accessibilityLabel(Text(todo.isCompleted ? "Completed" : "Mark as Complete"))
         }
     }
 }
 ```
+
+(Note: You can also make this as elaborate as you want - the code in the solution branches is a bit more fleshed out.)
 
 ## Step 8: Using @ObservedObject for Task Editing
 
@@ -169,187 +171,139 @@ When you have data that needs to be shared across multiple views or when your da
 interactions, `@ObservedObject` becomes invaluable. It allows views to observe changes in an object that conforms to the
 `ObservableObject` protocol, making it perfect for scenarios like editing task details.
 
-First, let's define a `TaskViewModel` that will act as an `@ObservedObject`. This view model will manage the state of
-the task being edited. Create a `TaskViewModel.swift` and implement the view model:
+First, let's define a `TodoModel` that will act as an `@ObservedObject`. This view model will manage the list of tasks, as well as adding tasks and marking them as completed. Create a `TodoModel.swift` and implement the view model:
 
 ```swift
 import Foundation
 
-class TaskViewModel: ObservableObject {
-    @Published var task: TodoItem
-    @Published var draftName: String
-
-    init(task: TodoItem) {
-        self.task = task
-        self.draftName = task.name
+class TodoModel: ObservableObject {
+    @Published private(set) var todos: [TodoItem] = []
+    
+    func createTodo(todo: TodoItem) {
+        todos.append(todo)
     }
-
-    // Function to update the task's name
-    func updateTaskName() {
-        task.name = draftName
-    }
-
-    // Function to toggle the task's completion status
-    func toggleCompletion() {
-        task.isCompleted.toggle()
-    }
-}
-```
-
-Then, update `TaskItemView` to use `TaskViewModel` as an `@ObservedObject`. This allows `TaskItemView` to respond to
-changes in the task's properties, such as its name or completion status. Note that `.onChange` is used for updating the
-task name.
-
-```swift
-import SwiftUI
-
-struct TaskItemView: View {
-    @ObservedObject var viewModel: TaskViewModel
-
-    var body: some View {
-        HStack {
-            TextField("Task Name", text: $viewModel.draftName)
-                    .onChange(of: viewModel.draftName) {
-                        viewModel.updateTaskName()
-                    }
-            Toggle(isOn: $viewModel.task.isCompleted) {
-                EmptyView()
+    
+    func toggleComplete(id: UUID) {
+        if let index = todos.firstIndex(where: { $0.id == id }) {
+            if todos[index].isCompleted {
+                todos[index].isCompleted = false
+            } else {
+                todos[index].isCompleted = true
+                todos.move(fromOffsets: IndexSet(integer: index), toOffset: todos.endIndex)
             }
         }
     }
 }
 ```
 
-Finally, adjust the `List` in `ContentView` to create `TaskItemView` by initializing a `TaskViewModel` with the
-corresponding `TodoItem`.
-
-```swift
-List(tasks) { task in
-    TaskItemView(viewModel: TaskViewModel(task: task))
-}
-```
-
-## Step 9: Data Sharing: Class vs. Struct
-
-Now, you may notice that when you add a new task, all existing tasks are reset. This is because we kept a simple @State
-array of tasks which is not shared with the tasks inside the view models. To solve this, we can turn `TodoItem` from a
-struct to a class, so that it is passed by reference.
-
-```swift
-class TodoItem: Identifiable {
-    var id = UUID()
-    var name: String
-    var isCompleted: Bool
-
-    init(id: UUID = UUID(), name: String, isCompleted: Bool) {
-        self.id = id
-        self.name = name
-        self.isCompleted = isCompleted
-    }
-}
-```
-
-## Step 10: Implementing Basic Animations and Transitions
-
-We can use transitions to visually distinguish between active and completed tasks. For instance, when a task is marked
-as completed, it could fade out or move to a different section of the UI.
-
-```swift
-struct TaskItemView: View {
-    @ObservedObject var viewModel: TaskViewModel
-
-    var body: some View {
-        HStack {
-            TextField("Task Name", text: $viewModel.draftName)
-                    .onChange(of: viewModel.draftName) {
-                        viewModel.updateTaskName()
-                    }
-                    .opacity(viewModel.task.isCompleted ? 0.5 : 1) // Reduced opacity when completed
-                    .animation(.default, value: viewModel.task.isCompleted) // Animate on isCompleted change
-            Toggle(isOn: $viewModel.task.isCompleted) {
-                EmptyView()
-            }
-        }
-    }
-}
-```
-
-To make the addition of new tasks visually appealing, we can wrap the insertion logic in a `withAnimation` block.
-
-```swift
-private func addNewTask() {
-    withAnimation {
-        let newTask = TodoItem(name: newTaskName, isCompleted: false)
-        tasks.append(newTask)
-        newTaskName = "" // Reset input field
-    }
-}
-```
-
-## Step 11: Share the Task List Using @EnvironmentObject
-
-`@EnvironmentObject` is ideal for sharing global data, such as user preferences or themes, across multiple views without
-the need to pass them through each view explicitly.
-
-First, define a `UserPreferences` class in a new `UserPrefrences.swift` file that includes user preferences like theme
-settings. This class will be observed by various parts of our app to reflect changes in real-time.
-
-```swift
-import Foundation
-import SwiftUI
-
-class UserPreferences: ObservableObject {
-    @Published var themeColor: Color = .blue // Default theme color
-
-    // Add more preferences as needed
-}
-```
-
-Now, modify `TaskManagerApp.swift` to create an instance of `UserPreferences` and provide it as an environment object to
-the entire app. This way, all views within the app can access and react to changes in user preferences.
+Then, update `TodoItemView` to use `TodoModel` as an `@ObservedObject`. This allows `TodoItemView` to tell `TodoModel` to mark a task as completed. We'll also remove the `@Binding` since the `TodoModel` will now take care of completing the task.
 
 ```swift
 import SwiftUI
 
+struct TodoItemView: View {
+    @ObservedObject var todoModel: TodoModel
+    var todo: TodoItem
+    
+    // ...
+}
+```
+
+And change the `Button`'s action to call into the view model:
+
+```swift
+Button(action: {
+    todoModel.toggleComplete(id: todo.id)
+}) {
+    Image(systemName: todo.isCompleted ? "checkmark.square.fill" : "square")
+}
+```
+
+Now, we can update the `ContentView` to take in a view model:
+
+```swift
+struct ContentView: View {
+    @ObservedObject var todoModel: TodoModel
+    @State private var newTodoName = ""
+
+    // ...
+}
+```
+
+And we'll update the `List` to pass in the `TodoModel` and its todos to each `TodoItemView`:
+
+```swift
+List(todoModel.todos) { todo in
+    TodoItemView(todo: todo)
+}
+```
+
+Finally, we'll need to construct our view model at the root of the app. Go ahead and add a `@StateObject` to the `TaskManagerApp` struct, and pass it into the `ContentView`:
+
+```swift
 @main
-struct TaskManagerApp: App {
-    var userPreferences = UserPreferences()  // Instantiate a UserPreferences object
-
+struct Task_ManagerApp: App {
+    @StateObject var todoModel = TodoModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                    .environmentObject(userPreferences)  // Add the UserPreferences object to the environment
+            ContentView(todoModel: todoModel)
         }
     }
 }
 ```
 
-Now, we can access it from `TaskItemView` using the `@EnvironmentObject` property wrapper:
+If any `#Preview` blocks are failing to compile, construct a `TodoModel` in there as well:
 
 ```swift
-struct TaskItemView: View {
-    @EnvironmentObject var userPreferences: UserPreferences  // Access the environment object
-    // ...
-
-    var body: some View {
-        // ...
-        TextField("Task Name", text: $viewModel.draftName)
-                .onChange(of: viewModel.draftName) {
-                    viewModel.updateTaskName()
-                }
-                .foregroundColor(userPreferences.themeColor) // Use theme color for text
-                .opacity(viewModel.task.isCompleted ? 0.5 : 1)
-                .animation(.default, value: viewModel.task.isCompleted)
-        // ...
-    }
+#Preview {
+    ContentView(todoModel: TodoModel())
 }
 ```
 
-## Step 12: Refactoring to Use `@EnvironmentObject` for Task List
+Normally you would never do the above without a `@StateObject`, but this is alright for a preview-only block in a small project like this.
 
-Remember how we said it's bad to use classes until absolutely necessary? Here, you can keep `TodoItem` a struct by using
-a `@EnvironmentObject` to store the list of tasks. Try it out yourself! You may also find `@StateObject` useful when
-initializing the object you use to keep track of the list of tasks. 
+## Step 9: Refactoring to Use `@EnvironmentObject` for `TodoModel`
+
+Having to pass around `TodoModel` can get pretty annoying. Let's fix that by using `@EnvironmentObject` instead. In `ContentView` and `TodoItemView`, replace the `@ObservedObject` with something like this:
+
+```swift
+@EnvironmentObject var todoModel: TodoModel
+```
+
+Now, we can remove the `todoModel` parameter from whereever we instantiate `TodoItemView` in the `ContentView`:
+```swift
+TodoItemView(todo: todo)
+```
+
+We can also remove it inside TaskManagerApp.swift, but we'll need to replace it with `.environmentObject` to introduce our `TodoModel` into the view hierarchy in the first place:
+```swift
+ContentView()
+    .environmentObject(todoModel)
+```
+
+Don't forget to update your `#Preview` blocks as well:
+```swift
+#Preview {
+    ContentView()
+        .environmentObject(TodoModel())
+}
+```
+
+Now our code should be cleaner, with less prop drilling!
+
+## Step 10: Add Animations When a Task is Completed
+
+We can use animations to visually distinguish between active and completed tasks. For instance, when a task is marked
+as completed, it could fade out or move to a different section of the UI. 
+
+In our case, we'll make completed tasks fade with an animation, using just a few lines of code in `TodoItemView.swift`. Add these modifiers just after the `HStack`:
+```swift
+.opacity(todo.isCompleted ? 0.1 : 1)
+.animation(.default, value: todo.isCompleted)
+```
+
+Et voilà! Now, completing a task should cause it to fade slightly with a pleasant animation. Feel free to experiment with your own sets of animations, or do something else entirely!
 
 ## Conclusion
 
