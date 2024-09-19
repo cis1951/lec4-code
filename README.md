@@ -55,7 +55,7 @@ struct ContentView: View {
 
     var body: some View {
         List(todos) { todo in
-            Text(todos.name)
+            Text(todo.name)
         }
     }
 }
@@ -76,7 +76,7 @@ name and add it to the list.
 
 ```swift
 struct ContentView: View {
-    @State var todos = [TodoItem]()
+    @State private var todos = [TodoItem]()
     @State private var newTodoName = "" // For handling user input
     
     var body: some View {
@@ -144,6 +144,8 @@ List($todos) { $todo in
     TodoItemView(todo: $todo)
 }
 ```
+
+We are using a binding here because we are going to later modify `TodoItemView` so that it updates the todo item. Since it needs to update the item, we need to pass in a binding.
 
 ## Step 7: Mark a Task as Completed
 
@@ -240,7 +242,17 @@ And we'll update the `List` to pass in the `TodoModel` and its todos to each `To
 
 ```swift
 List(todoModel.todos) { todo in
-    TodoItemView(todo: todo)
+    TodoItemView(todoModel: todoModel, todo: todo)
+}
+```
+
+Additionally, in `addNewTodo`, now use the model to append the new Todo instead:
+
+```swift
+private func addNewTodo() {
+    let newTodo = TodoItem(name: newTodoName, isCompleted: false)
+    todoModel.createTodo(todo: newTodo)
+    newTodoName = "" // Reset input field
 }
 ```
 
