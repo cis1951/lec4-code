@@ -9,12 +9,12 @@ import SwiftUI
 
 @main
 struct TaskManagerApp: App {
-    @StateObject var todoModel = TodoModel()
+    @State var todoModel = TodoModel()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(todoModel)
+                .environment(todoModel)
         }
     }
 }

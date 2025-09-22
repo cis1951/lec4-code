@@ -7,8 +7,9 @@
 
 import Foundation
 
-class TodoModel: ObservableObject {
-    @Published private(set) var todos: [TodoItem] = []
+@Observable
+class TodoModel {
+    private(set) var todos: [TodoItem] = []
     
     func createTodo(todo: TodoItem) {
         todos.append(todo)

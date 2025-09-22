@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TodoItemView: View {
-    @EnvironmentObject var todoModel: TodoModel
+    @Environment(TodoModel.self) var todoModel
     var todo: TodoItem
     
     var body: some View {
@@ -23,13 +23,15 @@ struct TodoItemView: View {
             .accessibilityLabel(Text(todo.isCompleted ? "Completed" : "Mark as Complete"))
         }
         .opacity(todo.isCompleted ? 0.1 : 1)
-        .animation(.default, value: todo.isCompleted)g
+        .animation(.default, value: todo.isCompleted)
     }
 }
 
 #Preview {
+    @Previewable @State var todoModel = TodoModel()
+    
     TodoItemView(
         todo: TodoItem(name: "Finish things", isCompleted: false)
     )
-    .environmentObject(TodoModel())
+    .environment(todoModel)
 }

@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var todoModel: TodoModel
+    @Environment(TodoModel.self) var todoModel
     @State private var newTodoName = "" // For handling user input
     
     var body: some View {
         VStack {
             TextField("Enter new todo", text: $newTodoName)
+                .textFieldStyle(.roundedBorder)
                 .padding()
             
             Button(action: addNewTodo) {
@@ -36,6 +37,8 @@ struct ContentView: View {
 }
 
 #Preview {
+    @Previewable @State var todoModel = TodoModel()
+    
     ContentView()
-        .environmentObject(TodoModel())
+        .environment(todoModel)
 }
