@@ -7,7 +7,7 @@
 ## Introduction
 
 We will do a simple demonstration of SwiftUI's capabilities for state management, including the use
-of `@State`, `@Binding`, `@ObservedObject`, and `@EnvironmentObject`, using a TODO list app. This app allows users to
+of `@State`, `@Binding`, `@Observable`, and `@Environment`, using a TODO list app. This app allows users to
 add tasks, mark them as completed, edit task details, and includes animations when reacting to state changes.
 
 You can name it however you want; pick a fun name! For now, we'll call it "TaskManager."
@@ -171,19 +171,19 @@ struct TodoItemView: View {
 
 (Note: You can also make this as elaborate as you want - the code in the solution branches is a bit more fleshed out.)
 
-## Step 8: Using @ObservedObject for Task Editing
+## Step 8: Using @Observable for Task Editing
 
 When you have data that needs to be shared across multiple views or when your data model involves more complex
-interactions, `@ObservedObject` becomes invaluable. It allows views to observe changes in an object that conforms to the
-`ObservableObject` protocol, making it perfect for scenarios like editing task details.
+interactions, `@Observable` becomes invaluable. It allows views to observe changes to an object potentially shared across multiple views, making it perfect for scenarios like coordinating edits.
 
-First, let's define a `TodoModel` that will act as an `@ObservedObject`. This view model will manage the list of tasks, as well as adding tasks and marking them as completed. Create a `TodoModel.swift` and implement the view model:
+First, let's define a `TodoModel` that will act as an `@Observable` object. This view model will manage the list of tasks, as well as adding tasks and marking them as completed. Create a `TodoModel.swift` and implement the view model:
 
 ```swift
 import Foundation
 
-class TodoModel: ObservableObject {
-    @Published private(set) var todos: [TodoItem] = []
+@Observable
+class TodoModel {
+    private(set) var todos: [TodoItem] = []
     
     func createTodo(todo: TodoItem) {
         todos.append(todo)
@@ -202,13 +202,13 @@ class TodoModel: ObservableObject {
 }
 ```
 
-Then, update `TodoItemView` to use `TodoModel` as an `@ObservedObject`. This allows `TodoItemView` to tell `TodoModel` to mark a task as completed. We'll also remove the `@Binding` since the `TodoModel` will now take care of completing the task.
+Then, update `TodoItemView` to use `TodoModel` just like any other value. This allows `TodoItemView` to tell `TodoModel` to mark a task as completed. We'll also remove the `@Binding` since the `TodoModel` will now take care of completing the task.
 
 ```swift
 import SwiftUI
 
 struct TodoItemView: View {
-    @ObservedObject var todoModel: TodoModel
+    var todoModel: TodoModel
     var todo: TodoItem
     
     // ...
@@ -229,7 +229,7 @@ Now, we can update the `ContentView` to take in a view model:
 
 ```swift
 struct ContentView: View {
-    @ObservedObject var todoModel: TodoModel
+    var todoModel: TodoModel
     @State private var newTodoName = ""
 
     // ...
@@ -254,12 +254,12 @@ private func addNewTodo() {
 }
 ```
 
-Finally, we'll need to construct our view model at the root of the app. Go ahead and add a `@StateObject` to the `TaskManagerApp` struct, and pass it into the `ContentView`:
+Finally, we'll need to construct our view model at the root of the app. Go ahead and add a `@State` to the `TaskManagerApp` struct, and pass it into the `ContentView`:
 
 ```swift
 @main
 struct Task_ManagerApp: App {
-    @StateObject var todoModel = TodoModel()
+    @State var todoModel = TodoModel()
     
     var body: some Scene {
         WindowGroup {
@@ -273,18 +273,17 @@ If any `#Preview` blocks are failing to compile, construct a `TodoModel` in ther
 
 ```swift
 #Preview {
-    ContentView(todoModel: TodoModel())
+    @Previewable @State var todoModel = TodoModel()
+    ContentView(todoModel: todoModel)
 }
 ```
 
-Normally you would never do the above without a `@StateObject`, but this is alright for a preview-only block in a small project like this.
+## Step 9: Refactoring to Use `@Environment` for `TodoModel`
 
-## Step 9: Refactoring to Use `@EnvironmentObject` for `TodoModel`
-
-Having to pass around `TodoModel` can get pretty annoying. Let's fix that by using `@EnvironmentObject` instead. In `ContentView` and `TodoItemView`, replace the `@ObservedObject` with something like this:
+Having to pass around `TodoModel` can get pretty annoying. Let's fix that by using `@Environment` instead. In `ContentView` and `TodoItemView`, replace the `todoModel` property with something like this:
 
 ```swift
-@EnvironmentObject var todoModel: TodoModel
+@EnvironmentObject(TodoModel.self) var todoModel
 ```
 
 Now, we can remove the `todoModel` parameter from whereever we instantiate `TodoItemView` in the `ContentView`:
@@ -295,14 +294,15 @@ TodoItemView(todo: todo)
 We can also remove it inside TaskManagerApp.swift, but we'll need to replace it with `.environmentObject` to introduce our `TodoModel` into the view hierarchy in the first place:
 ```swift
 ContentView()
-    .environmentObject(todoModel)
+    .environment(todoModel)
 ```
 
 Don't forget to update your `#Preview` blocks as well:
 ```swift
 #Preview {
+    @Previewable @State var todoModel = TodoModel()
     ContentView()
-        .environmentObject(TodoModel())
+        .environment(todoModel)
 }
 ```
 
